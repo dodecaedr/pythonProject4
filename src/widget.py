@@ -7,11 +7,11 @@ def mask_account_card(info_string: str) -> str:
     """Маскировка карт и счетов"""
     # Проверка на пустую строку или только пробелы
     if not info_string or not info_string.strip():
-        return None
+        return ""
 
     parts = info_string.split()
     if len(parts) < 2:
-        return None
+        return ""
 
     number = parts[-1]
     name = " ".join(parts[:-1])
@@ -40,21 +40,21 @@ def mask_account_card(info_string: str) -> str:
         if "Некорректный" not in masked:
             return f"{name} {masked}"
 
-    return None
+    return ""
 
 
 def get_date(date_string: str) -> str:
     """Преобразует дату из формата '2024-03-11T02:26:18.671407'в 'ДД.ММ.ГГГГ'"""
     try:
         # Парсим дату с помощью datetime
-        dt: datetime = datetime.fromisoformat(date_string.replace('Z', '+00:00'))
+        dt: datetime = datetime.fromisoformat(date_string.replace("Z", "+00:00"))
 
         # Форматируем в нужный формат
         return dt.strftime("%d.%m.%Y")
 
     except (ValueError, TypeError, AttributeError):
         # Обрабатываем все возможные ошибки парсинга
-        return None
+        return ""
 
 
 user_number = str(input("Введите номер: "))
