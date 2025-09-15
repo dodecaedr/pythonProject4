@@ -1,0 +1,68 @@
+from datetime import datetime
+
+from src.masks import get_mask_account, get_mask_card_number
+
+
+def mask_account_card(info_string: str) -> str:
+    """Маскировка карт и счетов"""
+    # Проверка на пустую строку или только пробелы
+    if not info_string or not info_string.strip():
+        return None
+
+    parts = info_string.split()
+    if len(parts) < 2:
+        return None
+
+    number = parts[-1]
+    name = " ".join(parts[:-1])
+
+    # Очищаем номер от нецифровых символов
+    clean_number = "".join(filter(str.isdigit, number))
+
+    # Определяем тип по названию
+    if name.lower() == "счет":
+        masked = get_mask_account(clean_number)
+        if "Некорректный" not in masked:
+            return f"{name} {masked}"
+
+    else:  # Карта или другое
+        masked = get_mask_card_number(clean_number)
+        if "Некорректный" not in masked:
+            return f"{name} {masked}"
+
+    # Автоопределение по длине номера (если по названию не определилось)
+    if len(clean_number) == 16:
+        masked = get_mask_card_number(clean_number)
+        if "Некорректный" not in masked:
+            return f"{name} {masked}"
+    elif len(clean_number) >= 4:
+        masked = get_mask_account(clean_number)
+        if "Некорректный" not in masked:
+            return f"{name} {masked}"
+
+    return None
+
+
+def get_date(date_string: str) -> str:
+    """Преобразует дату из формата '2024-03-11T02:26:18.671407'в 'ДД.ММ.ГГГГ'"""
+    try:
+        # Парсим дату с помощью datetime
+        dt: datetime = datetime.fromisoformat(date_string.replace('Z', '+00:00'))
+
+        # Форматируем в нужный формат
+        return dt.strftime("%d.%m.%Y")
+
+    except (ValueError, TypeError, AttributeError):
+        # Обрабатываем все возможные ошибки парсинга
+        return None
+
+
+user_number = str(input("Введите номер: "))
+user_data = str(input("Введите дату: "))
+print(mask_account_card(user_number))
+print(get_date(user_data))
+
+# Visa Platinum 7000792289606361
+# Maestro 7000792289606361
+# Счёт 73654108430135874305
+# 2024-03-11T02:26:18.671407
