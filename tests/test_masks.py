@@ -24,5 +24,5 @@ def test_get_mask_account_empty(fix_get_mask_account_empty: str) -> None:
     assert get_mask_account(fix_get_mask_account_empty) == "Вы ничего не ввели"
 
 
-def test_get_mask_account(fix_get_mask_account: str) -> str:  # masks
+def test_get_mask_account(fix_get_mask_account: str) -> None:
     assert get_mask_account(fix_get_mask_account) == "**4305"
