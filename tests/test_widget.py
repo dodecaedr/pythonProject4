@@ -27,3 +27,7 @@ def test_get_date_empty(fix_get_date_empty: str) -> None:
 
 def test_get_date_other(fix_get_date_other: str) -> None:
     assert get_date(fix_get_date_other) == "11.03.2024"
+
+
+def test_get_date_error(fix_get_date_error: str) -> None:
+    assert get_date(fix_get_date_error) == ""
