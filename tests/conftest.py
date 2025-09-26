@@ -54,3 +54,8 @@ def fix_get_date_other() -> str:  # widget
 @pytest.fixture
 def fix_get_date_empty() -> str:  # widget
     return ""
+
+
+@pytest.fixture
+def fix_get_date_error() -> str:  # widget
+    return "24-03-11"
