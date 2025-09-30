@@ -21,6 +21,11 @@ black = "^25.1.0"
 isort = "^6.0.1"
 mypy = "^1.18.1"
 
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.2"
+pytest-cov = "^7.0.0"
+
 [tool.black]
 line-length = 119
 target-version = ['py38']
@@ -43,7 +48,7 @@ force_grid_wrap = 0
 include_trailing_comma = true
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

@@ -55,14 +55,3 @@ def get_date(date_string: str) -> str:
     except (ValueError, TypeError, AttributeError):
         # Обрабатываем все возможные ошибки парсинга
         return ""
-
-
-user_number = str(input("Введите номер: "))
-user_data = str(input("Введите дату: "))
-print(mask_account_card(user_number))
-print(get_date(user_data))
-
-# Visa Platinum 7000792289606361
-# Maestro 7000792289606361
-# Счёт 73654108430135874305
-# 2024-03-11T02:26:18.671407
