@@ -1,42 +1,100 @@
 import pytest
 
-from src.processing import filter_by_state, sort_by_date
+from src.processing import sort_by_date, filter_by_state
 
 
-@pytest.mark.parametrize(
-    "dicti, filter_dicti",
-    [
-        (
-            [
-                {"id": 41428829, "state": "EXECUTED", "date": "2019-07-03T18:35:29.512364"},
-                {"id": 615064591, "state": "CANCELED", "date": "2018-10-14T08:21:33.419441"},
-                {"id": 939719570, "state": "EXECUTED", "date": "2018-06-30T02:08:58.425572"},
-                {"id": 594226727, "state": "CANCELED", "date": "2018-09-12T21:27:25.241689"},
-            ],
-            [
-                {"id": 41428829, "state": "EXECUTED", "date": "2019-07-03T18:35:29.512364"},
-                {"id": 939719570, "state": "EXECUTED", "date": "2018-06-30T02:08:58.425572"},
-            ],
-        )
-    ],
-)
-def test_filter_by_state(dicti: list, filter_dicti: list) -> None:
-    assert filter_by_state(dicti) == filter_dicti
-
-
-def test_sort_by_date(fix_sort_by_date: list) -> None:
-    assert sort_by_date(fix_sort_by_date) == [
-        {"id": 41428829, "state": "EXECUTED", "date": "2019-07-03T18:35:29.512364"},
-        {"id": 615064591, "state": "CANCELED", "date": "2018-10-14T08:21:33.419441"},
-        {"id": 594226727, "state": "CANCELED", "date": "2018-09-12T21:27:25.241689"},
-        {"id": 939719570, "state": "EXECUTED", "date": "2018-06-30T02:08:58.425572"},
+def test_filter_by_state_default():
+    """Фильтрация по умолчанию (state='EXECUTED')"""
+    data = [
+        {'id': 1, 'state': 'EXECUTED'},
+        {'id': 2, 'state': 'CANCELED'},
+        {'id': 3, 'state': 'EXECUTED'}
     ]
+    result = filter_by_state(data)
+    assert len(result) == 2
+    assert all(item['state'] == 'EXECUTED' for item in result)
 
 
-def test_sort_by_date_other(fix_sort_by_date_other: list) -> None:
-    assert sort_by_date(fix_sort_by_date_other) == [
-        {"id": 41428829, "state": "EXECUTED", "date": "2019-07-03"},
-        {"id": 615064591, "state": "CANCELED", "date": "2018-10-14"},
-        {"id": 594226727, "state": "CANCELED", "date": "2018-09-12"},
-        {"id": 939719570, "state": "EXECUTED", "date": "2018-06-30"},
+def test_filter_by_state_custom_state():
+    """Фильтрация по другому state"""
+    data = [
+        {'id': 1, 'state': 'PENDING'},
+        {'id': 2, 'state': 'CANCELED'},
+        {'id': 3, 'state': 'PENDING'}
     ]
+    result = filter_by_state(data, 'PENDING')
+    assert len(result) == 2
+    assert all(item['state'] == 'PENDING' for item in result)
+
+
+def test_filter_by_state_no_matches():
+    """Нет совпадений по state"""
+    data = [{'id': 1, 'state': 'CANCELED'}]
+    result = filter_by_state(data, 'EXECUTED')
+    assert result == []
+
+
+def test_filter_by_state_empty_list():
+    """Пустой входной список"""
+    result = filter_by_state([])
+    assert result == []
+
+
+def test_filter_by_state_missing_state_key():
+    """Элемент без ключа 'state'"""
+    data = [
+        {'id': 1},  # нет 'state'
+        {'id': 2, 'state': 'EXECUTED'}
+    ]
+    result = filter_by_state(data)
+    assert len(result) == 1
+    assert result[0]['id'] == 2
+
+
+def test_sort_by_date_desc():
+    """Сортировка по убыванию (reverse=True)"""
+    data = [
+        {'id': 1, 'date': '2020-01-03T00:00:00'},
+        {'id': 2, 'date': '2020-01-01T00:00:00'},
+        {'id': 3, 'date': '2020-01-02T00:00:00'}
+    ]
+    result = sort_by_date(data)
+    assert [item['id'] for item in result] == [1, 3, 2]
+
+
+def test_sort_by_date_asc():
+    """Сортировка по возрастанию (reverse=False)"""
+    data = [
+        {'id': 1, 'date': '2020-01-03T00:00:00'},
+        {'id': 2, 'date': '2020-01-01T00:00:00'},
+        {'id': 3, 'date': '2020-01-02T00:00:00'}
+    ]
+    result = sort_by_date(data, reverse=False)
+    assert [item['id'] for item in result] == [2, 3, 1]
+
+
+def test_sort_by_date_empty_list():
+    """Пустой список"""
+    result = sort_by_date([])
+    assert result == []
+
+
+def test_sort_by_date_single_item():
+    """Один элемент"""
+    data = [{'id': 1, 'date': '2020-01-01T00:00:00'}]
+    result = sort_by_date(data)
+    assert result == data
+
+
+def test_sort_by_date_invalid_date_format():
+    """Некорректный формат даты → ValueError"""
+    data = [{'id': 1, 'date': 'not-a-date'}]
+    with pytest.raises(ValueError):
+        sort_by_date(data)
+
+
+def test_sort_by_date_missing_date_key():
+    """Отсутствует ключ 'date' → KeyError"""
+    data = [{'id': 1}]
+    with pytest.raises(KeyError):
+        sort_by_date(data)
