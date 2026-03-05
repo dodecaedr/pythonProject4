@@ -1,37 +1,29 @@
 import functools
 import sys
+from typing import Callable, Any, Union, TextIO
 
 
-def log(filename=None):
-    def decorator(func):
+def log(filename: Union[str, None] = None) -> Callable:
+    def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             func_name = func.__name__
 
-            # Выбираем место для записи логов
             if filename:
-                output = open(filename, 'a')
+                output: TextIO = open(filename, "a", encoding="utf-8")
             else:
                 output = sys.stdout
 
             try:
                 result = func(*args, **kwargs)
-                # Пишем результат в лог
                 output.write(f"{func_name} ok\n")
                 return result
-
             except Exception as e:
-                # Пишем тип и входные данные ошибки
                 error_type = type(e).__name__
-                output.write(
-                    f"{func_name} error: {error_type}. "
-                    f"Inputs: {args}, {kwargs}\n"
-                )
-                raise  # Передаём ошибку дальше
-
-            finally:  # Закрываем файл, если писали в него
-
-                if filename:
+                output.write(f"{func_name} error: {error_type}. " f"Inputs: {args}, {kwargs}\n")
+                raise
+            finally:
+                if filename and output is not sys.stdout:
                     output.close()
 
         return wrapper

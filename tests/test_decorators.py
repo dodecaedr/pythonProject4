@@ -26,7 +26,7 @@ class TestLogDecorator:
         assert result == 5
 
         # Проверяем содержимое файла
-        with open(test_file, 'r') as f:
+        with open(test_file, "r") as f:
             content = f.read().strip()
         assert content == "test_func ok"
 
@@ -41,13 +41,13 @@ class TestLogDecorator:
         def problematic_func(x):
             if x < 0:
                 raise ValueError("Negative value")
-            return x ** 0.5
+            return x**0.5
 
         with pytest.raises(ValueError, match="Negative value"):
             problematic_func(-1)
 
         # Проверяем содержимое файла
-        with open(test_file, 'r') as f:
+        with open(test_file, "r") as f:
             content = f.read().strip()
         expected = "problematic_func error: ValueError. Inputs: (-1,), {}"
         assert content == expected
@@ -111,7 +111,7 @@ class TestLogDecorator:
         counter(3)
 
         # Проверяем, что все вызовы записаны
-        with open(test_file, 'r') as f:
+        with open(test_file, "r") as f:
             lines = f.readlines()
 
         assert len(lines) == 3
@@ -130,7 +130,7 @@ class TestLogDecorator:
             risky_func()
 
         # Проверяем логирование ошибки
-        with open("exception_test.txt", 'r') as f:
+        with open("exception_test.txt", "r") as f:
             content = f.read().strip()
         expected = "risky_func error: RuntimeError. Inputs: (), {}"
         assert content == expected
