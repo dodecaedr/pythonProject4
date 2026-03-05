@@ -16,7 +16,7 @@ def log(filename=None):
 
             try:
                 result = func(*args, **kwargs)
-                # Пишем успех в лог
+                # Пишем результат в лог
                 output.write(f"{func_name} ok\n")
                 return result
 
